@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Code2 } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,21 +17,29 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'About', href: '/#hero' },
-    { name: 'Experience', href: '/#experience' },
-    { name: 'Skills', href: '/#skills' },
-    { name: 'Projects', href: '/#projects' },
+    { name: 'About', targetId: 'hero' },
+    { name: 'Experience', targetId: 'experience' },
+    { name: 'Skills', targetId: 'skills' },
+    { name: 'Projects', targetId: 'projects' },
     { name: 'Contact', href: '/contact', type: 'page' },
   ];
 
-  const handleLinkClick = (e, link) => {
+  const handleSectionClick = (targetId) => {
     setIsMobileMenuOpen(false);
-    if (link.type !== 'page' && location.pathname === '/') {
-      e.preventDefault();
-      const element = document.querySelector(link.href.substring(1));
+    
+    if (location.pathname === '/') {
+      const element = document.getElementById(targetId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
     }
   };
 
@@ -56,14 +65,13 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ) : (
-              <a
+              <button
                 key={link.name}
-                href={link.href}
-                onClick={(e) => handleLinkClick(e, link)}
-                className="text-sm font-semibold text-text-muted hover:text-primary-600 transition-colors"
+                onClick={() => handleSectionClick(link.targetId)}
+                className="text-sm font-semibold text-text-muted hover:text-primary-600 transition-colors cursor-pointer"
               >
                 {link.name}
-              </a>
+              </button>
             )
           ))}
           <Link to="/contact" className="btn-primary py-2 px-6">
@@ -92,14 +100,13 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ) : (
-                <a
+                <button
                   key={link.name}
-                  href={link.href}
-                  onClick={(e) => handleLinkClick(e, link)}
-                  className="text-lg font-semibold hover:text-primary-600 transition-colors"
+                  onClick={() => handleSectionClick(link.targetId)}
+                  className="text-lg font-semibold text-left hover:text-primary-600 transition-colors"
                 >
                   {link.name}
-                </a>
+                </button>
               )
             ))}
             <Link
